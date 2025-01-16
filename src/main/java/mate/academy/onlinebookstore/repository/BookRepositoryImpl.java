@@ -2,6 +2,7 @@ package mate.academy.onlinebookstore.repository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import mate.academy.onlinebookstore.model.Book;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -48,6 +49,15 @@ public class BookRepositoryImpl implements BookRepository {
             return fromBook.getResultList();
         } catch (Exception e) {
             throw new NoSuchElementException("Cannot find all from books", e);
+        }
+    }
+
+    @Override
+    public Optional<Book> findBookById(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.find(Book.class, id));
+        } catch (Exception e) {
+            throw new NoSuchElementException("Cannot find book by id: " + id);
         }
     }
 }
