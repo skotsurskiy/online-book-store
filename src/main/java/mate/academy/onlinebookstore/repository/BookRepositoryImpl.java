@@ -1,5 +1,6 @@
 package mate.academy.onlinebookstore.repository;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -48,7 +49,7 @@ public class BookRepositoryImpl implements BookRepository {
             Query<Book> fromBook = session.createQuery("from Book ", Book.class);
             return fromBook.getResultList();
         } catch (Exception e) {
-            throw new NoSuchElementException("Cannot find all from books", e);
+            throw new EntityNotFoundException("Cannot find all from books", e);
         }
     }
 
