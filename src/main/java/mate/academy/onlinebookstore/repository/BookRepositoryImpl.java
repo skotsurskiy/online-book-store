@@ -1,7 +1,8 @@
 package mate.academy.onlinebookstore.repository;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 import mate.academy.onlinebookstore.model.Book;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -47,7 +48,16 @@ public class BookRepositoryImpl implements BookRepository {
             Query<Book> fromBook = session.createQuery("from Book ", Book.class);
             return fromBook.getResultList();
         } catch (Exception e) {
-            throw new NoSuchElementException("Cannot find all from books", e);
+            throw new EntityNotFoundException("Cannot find all from books", e);
+        }
+    }
+
+    @Override
+    public Optional<Book> findBookById(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.find(Book.class, id));
+        } catch (Exception e) {
+            throw new EntityNotFoundException("Cannot find book by id: " + id);
         }
     }
 }
