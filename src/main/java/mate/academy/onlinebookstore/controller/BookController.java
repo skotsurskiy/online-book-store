@@ -3,6 +3,7 @@ package mate.academy.onlinebookstore.controller;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.academy.onlinebookstore.dto.BookDto;
+import mate.academy.onlinebookstore.dto.BookSearchParameters;
 import mate.academy.onlinebookstore.dto.CreateBookRequestDto;
 import mate.academy.onlinebookstore.service.BookService;
 import org.springframework.http.HttpStatus;
@@ -48,5 +49,10 @@ public class BookController {
     @ResponseStatus(HttpStatus.OK)
     public BookDto updateBook(@PathVariable Long id, @RequestBody CreateBookRequestDto requestDto) {
         return bookService.update(id, requestDto);
+    }
+
+    @GetMapping("/search")
+    public List<BookDto> searchBook(BookSearchParameters searchParameters) {
+        return bookService.search(searchParameters);
     }
 }

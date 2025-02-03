@@ -1,25 +1,24 @@
 package mate.academy.onlinebookstore.service;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import mate.academy.onlinebookstore.dto.BookDto;
+import mate.academy.onlinebookstore.dto.BookSearchParameters;
 import mate.academy.onlinebookstore.dto.CreateBookRequestDto;
 import mate.academy.onlinebookstore.exception.EntityNotFoundException;
 import mate.academy.onlinebookstore.mapper.BookMapper;
 import mate.academy.onlinebookstore.model.Book;
 import mate.academy.onlinebookstore.repository.BookRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import mate.academy.onlinebookstore.repository.SpecificationBuilder;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
-
-    @Autowired
-    public BookServiceImpl(BookRepository bookRepository, BookMapper bookMapper) {
-        this.bookRepository = bookRepository;
-        this.bookMapper = bookMapper;
-    }
+    private final SpecificationBuilder<Book> bookSpecificationBuilder;
 
     @Override
     public BookDto save(CreateBookRequestDto requestDto) {
@@ -60,5 +59,13 @@ public class BookServiceImpl implements BookService {
                     return bookRepository.save(book); })
                 .orElseThrow(() -> new EntityNotFoundException("Can't update book by id: " + id));
         return bookMapper.toBookDto(updatedBook);
+    }
+
+    @Override
+    public List<BookDto> search(BookSearchParameters searchParameters) {
+        Specification<Book> bookSpecification = bookSpecificationBuilder.build(searchParameters);
+        return bookRepository.findAll(bookSpecification).stream()
+                .map(bookMapper::toBookDto)
+                .toList();
     }
 }
