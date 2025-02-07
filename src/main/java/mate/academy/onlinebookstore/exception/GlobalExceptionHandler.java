@@ -17,7 +17,6 @@ public class GlobalExceptionHandler {
     private static final String TIMESTAMP = "timestamp";
     private static final String STATUS = "status";
     private static final String ERRORS = "errors";
-    private static final String ISBN_DUPLICATE_MESSAGE = "isbn must be unique";
     private static final String WHITESPACE = " ";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
