@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -33,20 +32,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Map<String, Object>> handleDuplicateKeyExceptions() {
-        Map<String, Object> body = getDefaultBody(HttpStatus.BAD_REQUEST);
-        body.put(ERRORS, ISBN_DUPLICATE_MESSAGE);
-        return ResponseEntity.badRequest().body(body);
-    }
-
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleEntityNotFoundExceptions(
             EntityNotFoundException ex
     ) {
-        Map<String, Object> body = getDefaultBody(HttpStatus.BAD_REQUEST);
+        Map<String, Object> body = getDefaultBody(HttpStatus.NOT_FOUND);
         body.put(ERRORS, ex.getMessage());
-        return ResponseEntity.badRequest().body(body);
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
     private String getErrorMessage(ObjectError objectError) {
