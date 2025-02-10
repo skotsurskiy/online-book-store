@@ -40,6 +40,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(RegistrationException.class)
+    public ResponseEntity<Map<String, Object>> handleRegistrationExceptions(
+            RegistrationException ex
+    ) {
+        Map<String, Object> body = getDefaultBody(HttpStatus.BAD_REQUEST);
+        body.put(ERRORS, ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
     private String getErrorMessage(ObjectError objectError) {
         if (objectError instanceof FieldError fieldError) {
             String defaultMessage = fieldError.getDefaultMessage();

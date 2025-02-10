@@ -3,7 +3,7 @@ package mate.academy.onlinebookstore.repository.book;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
-import mate.academy.onlinebookstore.dto.BookSearchParameters;
+import mate.academy.onlinebookstore.dto.book.BookSearchParameters;
 import mate.academy.onlinebookstore.model.Book;
 import mate.academy.onlinebookstore.repository.SpecificationBuilder;
 import mate.academy.onlinebookstore.repository.SpecificationProviderManager;
