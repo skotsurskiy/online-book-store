@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-users
+      author: kotsurskiy
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: email, value: "user@email.com" }
+              - column: { name: password, value: "$2a$10$y50C2oLVFpw6GDbPzjrAQepma3pDKXqGr9Zg/kBvfgud9hFstFA1C" }
+              - column: { name: first_name, value: "User" }
+              - column: { name: last_name, value: "User" }
+              - column: { name: shipping_address, value: "shipping address"}
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: email, value: "admin@email.com" }
+              - column: { name: password, value: "$2a$10$y50C2oLVFpw6GDbPzjrAQepma3pDKXqGr9Zg/kBvfgud9hFstFA1C" }
+              - column: { name: first_name, value: "Admin" }
+              - column: { name: last_name, value: "Admin" }
+              - column: { name: shipping_address, value: "shipping address" }
