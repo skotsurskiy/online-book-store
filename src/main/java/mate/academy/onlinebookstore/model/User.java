@@ -25,13 +25,12 @@ public class User implements UserDetails {
     private String email;
     @Column(nullable = false)
     private String password;
-    @Column(name = "first_name", nullable = false)
+    @Column(nullable = false)
     private String firstName;
-    @Column(name = "last_name", nullable = false)
+    @Column(nullable = false)
     private String lastName;
-    @Column(name = "shipping_address")
     private String shippingAddress;
-    @Column(name = "is_deleted", nullable = false)
+    @Column(nullable = false)
     private boolean isDeleted = false;
     @ManyToMany
     @JoinTable(

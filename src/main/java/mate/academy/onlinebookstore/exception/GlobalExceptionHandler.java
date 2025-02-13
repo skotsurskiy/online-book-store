@@ -44,9 +44,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleRegistrationExceptions(
             RegistrationException ex
     ) {
-        Map<String, Object> body = getDefaultBody(HttpStatus.BAD_REQUEST);
+        Map<String, Object> body = getDefaultBody(HttpStatus.CONFLICT);
         body.put(ERRORS, ex.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
     private String getErrorMessage(ObjectError objectError) {
