@@ -1,15 +1,15 @@
-package mate.academy.onlinebookstore.service;
+package mate.academy.onlinebookstore.service.book;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import mate.academy.onlinebookstore.dto.BookDto;
-import mate.academy.onlinebookstore.dto.BookSearchParameters;
-import mate.academy.onlinebookstore.dto.CreateBookRequestDto;
+import mate.academy.onlinebookstore.dto.book.BookDto;
+import mate.academy.onlinebookstore.dto.book.BookSearchParameters;
+import mate.academy.onlinebookstore.dto.book.CreateBookRequestDto;
 import mate.academy.onlinebookstore.exception.EntityNotFoundException;
 import mate.academy.onlinebookstore.mapper.BookMapper;
 import mate.academy.onlinebookstore.model.Book;
-import mate.academy.onlinebookstore.repository.BookRepository;
 import mate.academy.onlinebookstore.repository.SpecificationBuilder;
+import mate.academy.onlinebookstore.repository.book.BookRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
