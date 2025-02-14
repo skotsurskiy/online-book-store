@@ -34,6 +34,7 @@ public class BookController {
             description = "get all products with pagination and sorting properties"
     )
     @GetMapping
+    @PreAuthorize("hasRole('USER')")
     public List<BookDto> getAll(Pageable pageable) {
         return bookService.findAll(pageable);
     }
@@ -42,6 +43,7 @@ public class BookController {
             summary = "get book by id",
             description = "get book by id"
     )
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")
     public BookDto getBookById(@PathVariable Long id) {
         return bookService.findBookById(id);
@@ -85,6 +87,7 @@ public class BookController {
             summary = "search book",
             description = "search book by params: title, author, price"
     )
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/search")
     public List<BookDto> searchBook(BookSearchParameters searchParameters) {
         return bookService.search(searchParameters);
