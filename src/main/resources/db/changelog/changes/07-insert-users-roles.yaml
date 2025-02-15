@@ -21,3 +21,12 @@ databaseChangeLog:
               - column:
                   name: role_id
                   valueComputed: "(SELECT id FROM roles WHERE role = 'ROLE_ADMIN')"
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  valueComputed: "(SELECT id FROM users WHERE email = 'admin@email.com')"
+              - column:
+                  name: role_id
+                  valueComputed: "(SELECT id FROM roles WHERE role = 'ROLE_USER')"
