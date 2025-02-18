@@ -2,10 +2,12 @@ package mate.academy.onlinebookstore.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.academy.onlinebookstore.dto.book.BookWithoutCategoryIdDto;
-import mate.academy.onlinebookstore.dto.category.CategoryDto;
+import mate.academy.onlinebookstore.dto.category.CategoryRequestDto;
+import mate.academy.onlinebookstore.dto.category.CategoryResponseDto;
 import mate.academy.onlinebookstore.service.book.BookService;
 import mate.academy.onlinebookstore.service.category.CategoryService;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +37,7 @@ public class CategoryController {
     )
     @GetMapping
     @PreAuthorize("hasRole('USER')")
-    public List<CategoryDto> findAllCategories(Pageable pageable) {
+    public List<CategoryResponseDto> findAllCategories(Pageable pageable) {
         return categoryService.findAll(pageable);
     }
 
@@ -45,7 +47,7 @@ public class CategoryController {
     )
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('USER')")
-    public CategoryDto findCategoryById(@PathVariable Long id) {
+    public CategoryResponseDto findCategoryById(@PathVariable Long id) {
         return categoryService.findById(id);
     }
 
@@ -69,7 +71,7 @@ public class CategoryController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
-    public CategoryDto createCategory(@RequestBody CategoryDto categoryDto) {
+    public CategoryResponseDto createCategory(@RequestBody @Valid CategoryRequestDto categoryDto) {
         return categoryService.save(categoryDto);
     }
 
@@ -79,7 +81,10 @@ public class CategoryController {
     )
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public CategoryDto updateCategory(@RequestBody CategoryDto categoryDto, @PathVariable Long id) {
+    public CategoryResponseDto updateCategory(
+            @RequestBody @Valid CategoryRequestDto categoryDto,
+            @PathVariable Long id
+    ) {
         return categoryService.update(categoryDto, id);
     }
 
