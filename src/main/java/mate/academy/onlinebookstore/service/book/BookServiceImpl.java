@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.academy.onlinebookstore.dto.book.BookDto;
 import mate.academy.onlinebookstore.dto.book.BookSearchParameters;
+import mate.academy.onlinebookstore.dto.book.BookWithoutCategoryIdDto;
 import mate.academy.onlinebookstore.dto.book.CreateBookRequestDto;
 import mate.academy.onlinebookstore.exception.EntityNotFoundException;
 import mate.academy.onlinebookstore.mapper.BookMapper;
@@ -48,25 +49,23 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto update(Long id, CreateBookRequestDto requestDto) {
-        Book updatedBook = bookRepository.findBookById(id)
-                .map(book -> {
-                    book.setId(id);
-                    book.setTitle(requestDto.getTitle());
-                    book.setAuthor(requestDto.getAuthor());
-                    book.setIsbn(requestDto.getIsbn());
-                    book.setDescription(requestDto.getDescription());
-                    book.setPrice(requestDto.getPrice());
-                    book.setCoverImage(requestDto.getCoverImage());
-                    return bookRepository.save(book); })
-                .orElseThrow(() -> new EntityNotFoundException("Can't update book by id: " + id));
-        return bookMapper.toBookDto(updatedBook);
+        Book bookEntity = bookMapper.toBookEntity(requestDto);
+        bookEntity.setId(id);
+        return bookMapper.toBookDto(bookRepository.save(bookEntity));
     }
 
     @Override
-    public List<BookDto> search(BookSearchParameters searchParameters) {
+    public List<BookDto> search(BookSearchParameters searchParameters, Pageable pageable) {
         Specification<Book> bookSpecification = bookSpecificationBuilder.build(searchParameters);
-        return bookRepository.findAll(bookSpecification).stream()
+        return bookRepository.findAll(bookSpecification, pageable).stream()
                 .map(bookMapper::toBookDto)
+                .toList();
+    }
+
+    @Override
+    public List<BookWithoutCategoryIdDto> findAllByCategory(Long id) {
+        return bookRepository.findAllByCategoryId(id).stream()
+                .map(bookMapper::toBookWithoutCategoryIdDto)
                 .toList();
     }
 }

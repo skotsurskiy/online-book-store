@@ -89,7 +89,7 @@ public class BookController {
     )
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/search")
-    public List<BookDto> searchBook(BookSearchParameters searchParameters) {
-        return bookService.search(searchParameters);
+    public List<BookDto> searchBook(BookSearchParameters searchParameters, Pageable pageable) {
+        return bookService.search(searchParameters, pageable);
     }
 }
