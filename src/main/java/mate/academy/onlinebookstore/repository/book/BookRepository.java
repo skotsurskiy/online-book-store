@@ -16,7 +16,7 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
     Optional<Book> findBookById(Long id);
 
     @Query(value = "SELECT bks.* FROM books bks INNER JOIN books_categories bc "
-            + "on bks.id = bc.book_id WHERE bc.category_id = :id",
+            + "ON bks.id = bc.book_id WHERE bc.category_id = :id",
             countQuery = "SELECT COUNT(*) FROM books bks INNER JOIN books_categories bc "
                     + "ON bks.id = bc.book_id WHERE bc.category_id = :id",
             nativeQuery = true)
