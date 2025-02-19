@@ -11,6 +11,7 @@ import mate.academy.onlinebookstore.model.Book;
 import mate.academy.onlinebookstore.model.Category;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(config = MapperConfig.class)
@@ -20,6 +21,9 @@ public interface BookMapper {
     Book toBookEntity(CreateBookRequestDto requestDto);
 
     BookWithoutCategoryIdDto toBookWithoutCategoryIdDto(Book book);
+
+    @Mapping(target = "id", ignore = true)
+    void updateBookFromDto(CreateBookRequestDto dto, @MappingTarget Book book);
 
     @AfterMapping
     default void setCategoriesIds(@MappingTarget BookDto bookDto, Book book) {
