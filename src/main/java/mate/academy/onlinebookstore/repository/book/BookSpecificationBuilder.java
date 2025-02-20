@@ -16,6 +16,7 @@ public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
     private static final String TITLE_KEY = "title";
     private static final String AUTHOR_KEY = "author";
     private static final String PRICE_KEY = "price";
+    private static final String CATEGORY_KEY = "category";
     private final SpecificationProviderManager<Book> bookSpecificationProviderManager;
 
     @Override
@@ -38,6 +39,14 @@ public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
                     .getSpecification(Arrays.stream(searchParameters
                             .prices())
                             .map(BigDecimal::toString)
+                            .toArray(String[]::new)));
+        }
+        if (searchParameters.categoryIds() != null && searchParameters.categoryIds().length > 0) {
+            specification = specification.and(bookSpecificationProviderManager
+                    .getSpecificationProvider(CATEGORY_KEY)
+                    .getSpecification(Arrays.stream(searchParameters
+                                    .categoryIds())
+                            .map(Object::toString)
                             .toArray(String[]::new)));
         }
         return specification;
