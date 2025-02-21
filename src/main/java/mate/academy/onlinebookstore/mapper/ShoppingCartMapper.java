@@ -5,7 +5,6 @@ import mate.academy.onlinebookstore.dto.shoppingcart.ShoppingCartDto;
 import mate.academy.onlinebookstore.model.ShoppingCart;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 
 @Mapper(config = MapperConfig.class, uses = {CartItemMapper.class, UserMapper.class})
 public interface ShoppingCartMapper {
