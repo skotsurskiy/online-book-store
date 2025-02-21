@@ -28,11 +28,4 @@ public interface CartItemMapper {
                 .map(this::toCartItemResponseDto)
                 .collect(Collectors.toSet());
     }
-
-    @Named("getCartItems")
-    default Set<CartItem> getCartItems(Set<CartItemResponseDto> cartItemResponseDtos) {
-        return cartItemResponseDtos.stream()
-                .map(this::toCartItemEntityFromResponseDto)
-                .collect(Collectors.toSet());
-    }
 }

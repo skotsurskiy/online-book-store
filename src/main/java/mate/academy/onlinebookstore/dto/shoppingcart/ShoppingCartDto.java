@@ -8,6 +8,7 @@ import mate.academy.onlinebookstore.dto.cartitem.CartItemResponseDto;
 @Getter
 @Setter
 public class ShoppingCartDto {
+    private Long id;
     private Long userId;
     private Set<CartItemResponseDto> cartItemResponseDtos;
 }

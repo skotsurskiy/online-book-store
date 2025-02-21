@@ -16,19 +16,4 @@ public interface ShoppingCartMapper {
             qualifiedByName = "getCartItemsDtos"
     )
     ShoppingCartDto toShoppingCartDto(ShoppingCart shoppingCart);
-
-    @Mapping(target = "user", source = "userId", qualifiedByName = "getUserById")
-    @Mapping(
-            target = "cartItems",
-            source = "cartItemResponseDtos",
-            qualifiedByName = "getCartItems"
-    )
-    ShoppingCart toShoppingCartEntity(ShoppingCartDto shoppingCartDto);
-
-    @Named("getShoppingCartById")
-    default ShoppingCart getShoppingCartById(Long id) {
-        ShoppingCart shoppingCart = new ShoppingCart();
-        shoppingCart.setId(id);
-        return shoppingCart;
-    }
 }

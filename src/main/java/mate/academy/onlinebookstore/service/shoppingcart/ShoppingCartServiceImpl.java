@@ -66,15 +66,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     private ShoppingCart getUserShoppingCart() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return userRepository.getShoppingCartByUser(authentication
-                        .getName())
+        return userRepository.getShoppingCartByUser(authentication.getName())
                 .orElseThrow(() -> new EntityNotFoundException("Can't find shopping cart"));
     }
 
     private CartItem findCartItemById(Long id) {
-        return getUserShoppingCart().getCartItems().stream()
-                .filter(cartItem -> cartItem.getId().equals(id))
-                .findFirst()
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return cartItemRepository.findByIdAndShoppingCartUserEmail(id, email)
                 .orElseThrow(()
                         -> new EntityNotFoundException("Can't find cart item by id: " + id));
     }

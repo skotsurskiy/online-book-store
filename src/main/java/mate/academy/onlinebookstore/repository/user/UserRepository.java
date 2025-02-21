@@ -18,6 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
                 from ShoppingCart sc
                 join fetch sc.user u
                 left join fetch sc.cartItems ci
+                join fetch ci.book
                 where u.email = :email
             """)
     Optional<ShoppingCart> getShoppingCartByUser(@Param("email") String email);
