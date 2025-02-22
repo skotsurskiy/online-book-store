@@ -1,13 +1,16 @@
 package mate.academy.onlinebookstore.dto.cartitem;
 
-import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class CartItemRequestDto {
+    @NotNull
+    @Positive
     private Long bookId;
-    @Max(99)
+    @Positive
     private int quantity;
 }

@@ -1,5 +1,6 @@
 package mate.academy.onlinebookstore.service.shoppingcart;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import mate.academy.onlinebookstore.dto.cartitem.CartItemRequestDto;
 import mate.academy.onlinebookstore.dto.cartitem.CartItemUpdateQuantityDto;
@@ -9,18 +10,17 @@ import mate.academy.onlinebookstore.mapper.CartItemMapper;
 import mate.academy.onlinebookstore.mapper.ShoppingCartMapper;
 import mate.academy.onlinebookstore.model.CartItem;
 import mate.academy.onlinebookstore.model.ShoppingCart;
+import mate.academy.onlinebookstore.model.User;
 import mate.academy.onlinebookstore.repository.book.BookRepository;
 import mate.academy.onlinebookstore.repository.cartitem.CartItemRepository;
 import mate.academy.onlinebookstore.repository.shoppingcart.ShoppingCartRepository;
-import mate.academy.onlinebookstore.repository.user.UserRepository;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ShoppingCartServiceImpl implements ShoppingCartService {
-    private final UserRepository userRepository;
     private final ShoppingCartMapper shoppingCartMapper;
     private final ShoppingCartRepository shoppingCartRepository;
     private final CartItemMapper cartItemMapper;
@@ -64,15 +64,22 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return getShoppingCart();
     }
 
+    @Override
+    public void createShoppingCartForUser(User user) {
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setUser(user);
+        shoppingCartRepository.save(shoppingCart);
+    }
+
     private ShoppingCart getUserShoppingCart() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return userRepository.getShoppingCartByUser(authentication.getName())
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return shoppingCartRepository.getShoppingCartByUserId(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Can't find shopping cart"));
     }
 
     private CartItem findCartItemById(Long id) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return cartItemRepository.findByIdAndShoppingCartUserEmail(id, email)
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return cartItemRepository.findByIdAndShoppingCartId(id, user.getId())
                 .orElseThrow(()
                         -> new EntityNotFoundException("Can't find cart item by id: " + id));
     }
