@@ -19,9 +19,6 @@ public interface CartItemMapper {
     @Mapping(target = "book", source = "bookId", qualifiedByName = "getBookById")
     CartItem toCartItemEntity(CartItemRequestDto requestDto);
 
-    @Mapping(target = "book", source = "bookId", qualifiedByName = "getBookById")
-    CartItem toCartItemEntityFromResponseDto(CartItemResponseDto responseDto);
-
     @Named("getCartItemsDtos")
     default Set<CartItemResponseDto> getCartItemsDtos(Set<CartItem> cartItems) {
         return cartItems.stream()
