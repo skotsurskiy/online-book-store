@@ -35,18 +35,28 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleEntityNotFoundExceptions(
             EntityNotFoundException ex
     ) {
-        Map<String, Object> body = getDefaultBody(HttpStatus.NOT_FOUND);
-        body.put(ERRORS, ex.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+        return getDefaultResponseEntity(HttpStatus.NOT_FOUND, ex);
     }
 
     @ExceptionHandler(RegistrationException.class)
     public ResponseEntity<Map<String, Object>> handleRegistrationExceptions(
             RegistrationException ex
     ) {
-        Map<String, Object> body = getDefaultBody(HttpStatus.CONFLICT);
-        body.put(ERRORS, ex.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+        return getDefaultResponseEntity(HttpStatus.CONFLICT, ex);
+    }
+
+    @ExceptionHandler(EmptyCartException.class)
+    public ResponseEntity<Map<String, Object>> handleEmptyCartException(
+            EmptyCartException ex
+    ) {
+        return getDefaultResponseEntity(HttpStatus.BAD_REQUEST, ex);
+    }
+
+    @ExceptionHandler(InvalidOrderStatusException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidOrderStatusException(
+            InvalidOrderStatusException ex
+    ) {
+        return getDefaultResponseEntity(HttpStatus.BAD_REQUEST, ex);
     }
 
     private String getErrorMessage(ObjectError objectError) {
@@ -63,5 +73,14 @@ public class GlobalExceptionHandler {
         body.put(TIMESTAMP, LocalDateTime.now());
         body.put(STATUS, httpStatus);
         return body;
+    }
+
+    private ResponseEntity<Map<String, Object>> getDefaultResponseEntity(
+            HttpStatus httpStatus,
+            Exception ex
+    ) {
+        Map<String, Object> body = getDefaultBody(httpStatus);
+        body.put(ERRORS, ex.getMessage());
+        return new ResponseEntity<>(body, httpStatus);
     }
 }
