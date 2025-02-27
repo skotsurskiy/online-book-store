@@ -23,7 +23,7 @@ import mate.academy.onlinebookstore.repository.order.OrderRepository;
 import mate.academy.onlinebookstore.repository.shoppingcart.ShoppingCartRepository;
 import mate.academy.onlinebookstore.service.shoppingcart.ShoppingCartService;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,8 +37,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemMapper orderItemMapper;
 
     @Override
-    public OrderDto completeOrder(OrderRequestDto orderRequestDto) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public OrderDto completeOrder(OrderRequestDto orderRequestDto, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
         ShoppingCart shoppingCart = shoppingCartRepository.getShoppingCartByUserId(user.getId())
                 .orElseThrow(()
                         -> new EntityNotFoundException("Can't find shopping cart by id: "
@@ -53,16 +53,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> getOrdersHistory(Pageable pageable) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public List<OrderDto> getOrdersHistory(Pageable pageable, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
         return orderRepository.findAllByUserId(user.getId(), pageable).stream()
                 .map(orderMapper::toOrderDto)
                 .toList();
     }
 
     @Override
-    public List<OrderItemDto> getOrderItemsByOrderId(Long orderId) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public List<OrderItemDto> getOrderItemsByOrderId(Long orderId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
         Order order = orderRepository.findByIdAndUserId(orderId, user.getId()).orElseThrow(()
                 -> new EntityNotFoundException("Can't find order by id: " + orderId));
         return order.getOrderItems().stream()
@@ -71,8 +71,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderItemDto getOrderItemByOrderIdAndItemId(Long orderId, Long itemId) {
-        return getOrderItemsByOrderId(orderId).stream()
+    public OrderItemDto getOrderItemByOrderIdAndItemId(
+            Long orderId,
+            Long itemId,
+            Authentication authentication
+    ) {
+        return getOrderItemsByOrderId(orderId, authentication).stream()
                 .filter(orderItemDto -> orderItemDto.id().equals(itemId))
                 .findFirst()
                 .orElseThrow(()
