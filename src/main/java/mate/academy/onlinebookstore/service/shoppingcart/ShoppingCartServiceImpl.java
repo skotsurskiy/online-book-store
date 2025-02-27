@@ -71,6 +71,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         shoppingCartRepository.save(shoppingCart);
     }
 
+    @Override
+    public void clear() {
+        cartItemRepository.deleteByShoppingCartId(getUserShoppingCart().getId());
+    }
+
     private ShoppingCart getUserShoppingCart() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return shoppingCartRepository.getShoppingCartByUserId(user.getId())
