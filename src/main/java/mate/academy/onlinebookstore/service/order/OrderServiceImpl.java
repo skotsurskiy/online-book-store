@@ -8,11 +8,10 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import mate.academy.onlinebookstore.dto.order.OrderDto;
 import mate.academy.onlinebookstore.dto.order.OrderRequestDto;
-import mate.academy.onlinebookstore.dto.order.OrderStatusDto;
+import mate.academy.onlinebookstore.dto.order.UpdateOrderStatusDto;
 import mate.academy.onlinebookstore.dto.orderitem.OrderItemDto;
 import mate.academy.onlinebookstore.exception.EmptyCartException;
-import mate.academy.onlinebookstore.exception.EntityNotFoundException;
-import mate.academy.onlinebookstore.exception.InvalidOrderStatusException;
+import mate.academy.onlinebookstore.exception.OrderProcessingException;
 import mate.academy.onlinebookstore.mapper.OrderItemMapper;
 import mate.academy.onlinebookstore.mapper.OrderMapper;
 import mate.academy.onlinebookstore.model.Order;
@@ -41,14 +40,14 @@ public class OrderServiceImpl implements OrderService {
         User user = (User) authentication.getPrincipal();
         ShoppingCart shoppingCart = shoppingCartRepository.getShoppingCartByUserId(user.getId())
                 .orElseThrow(()
-                        -> new EntityNotFoundException("Can't find shopping cart by id: "
+                        -> new OrderProcessingException("Can't find shopping cart by id: "
                         + user.getId()));
         if (shoppingCart.getCartItems().isEmpty()) {
             throw new EmptyCartException("Shopping cart is empty. "
                     + "Add items before placing an order.");
         }
         Order order = createOrder(shoppingCart, orderRequestDto);
-        shoppingCartService.clear();
+        shoppingCart.clearItems();
         return orderMapper.toOrderDto(orderRepository.save(order));
     }
 
@@ -64,7 +63,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderItemDto> getOrderItemsByOrderId(Long orderId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         Order order = orderRepository.findByIdAndUserId(orderId, user.getId()).orElseThrow(()
-                -> new EntityNotFoundException("Can't find order by id: " + orderId));
+                -> new OrderProcessingException("Can't find order by id: " + orderId));
         return order.getOrderItems().stream()
                 .map(orderItemMapper::toOrderItemDto)
                 .toList();
@@ -80,21 +79,21 @@ public class OrderServiceImpl implements OrderService {
                 .filter(orderItemDto -> orderItemDto.id().equals(itemId))
                 .findFirst()
                 .orElseThrow(()
-                        -> new EntityNotFoundException("Can't find order by orderId: %s, itemId: %s"
+                        -> new OrderProcessingException(("Can't find order "
+                        + "by orderId: %s, itemId: %s")
                         .formatted(orderId, itemId)));
     }
 
     @Override
-    public OrderStatusDto updateOrderStatus(Long orderId, OrderStatusDto orderStatusDto) {
+    public UpdateOrderStatusDto updateOrderStatus(
+            Long orderId,
+            UpdateOrderStatusDto orderStatusDto
+    ) {
         Order order = orderRepository.findById(orderId).orElseThrow(()
-                -> new EntityNotFoundException("Can't find order by id: " + orderId));
-        try {
-            order.setStatus(Order.Status.valueOf(orderStatusDto.status().toUpperCase()));
-        } catch (IllegalArgumentException ex) {
-            throw new InvalidOrderStatusException("Invalid order status: "
-                    + orderStatusDto.status());
-        }
-        return new OrderStatusDto(orderRepository.save(order).getStatus().name());
+                -> new OrderProcessingException("Can't find order by id: " + orderId));
+        order.setStatus(Order.Status.valueOf(orderStatusDto.status().toUpperCase()));
+        return new UpdateOrderStatusDto(orderRepository.save(order).getId(),
+                order.getStatus().name());
     }
 
     private Order createOrder(ShoppingCart shoppingCart, OrderRequestDto orderRequestDto) {

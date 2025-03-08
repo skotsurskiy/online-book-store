@@ -1,4 +1,6 @@
 package mate.academy.onlinebookstore.dto.order;
 
-public record OrderRequestDto(String shippingAddress) {
+import jakarta.validation.constraints.NotBlank;
+
+public record OrderRequestDto(@NotBlank String shippingAddress) {
 }

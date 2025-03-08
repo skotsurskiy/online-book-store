@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import mate.academy.onlinebookstore.dto.cartitem.CartItemRequestDto;
 import mate.academy.onlinebookstore.dto.cartitem.CartItemUpdateQuantityDto;
 import mate.academy.onlinebookstore.dto.shoppingcart.ShoppingCartDto;
-import mate.academy.onlinebookstore.exception.EntityNotFoundException;
+import mate.academy.onlinebookstore.exception.OrderProcessingException;
 import mate.academy.onlinebookstore.mapper.CartItemMapper;
 import mate.academy.onlinebookstore.mapper.ShoppingCartMapper;
 import mate.academy.onlinebookstore.model.CartItem;
@@ -38,7 +38,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         CartItem cartItem = cartItemMapper.toCartItemEntity(requestDto);
         cartItem.setShoppingCart(shoppingCart);
         cartItem.setBook(bookRepository.findBookById(requestDto.getBookId())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find book with id: "
+                .orElseThrow(() -> new OrderProcessingException("Can't find book with id: "
                         + requestDto.getBookId())));
         shoppingCart.getCartItems().add(cartItem);
         shoppingCartRepository.save(shoppingCart);
@@ -71,21 +71,16 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         shoppingCartRepository.save(shoppingCart);
     }
 
-    @Override
-    public void clear() {
-        cartItemRepository.deleteByShoppingCartId(getUserShoppingCart().getId());
-    }
-
     private ShoppingCart getUserShoppingCart() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return shoppingCartRepository.getShoppingCartByUserId(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find shopping cart"));
+                .orElseThrow(() -> new OrderProcessingException("Can't find shopping cart"));
     }
 
     private CartItem findCartItemById(Long id) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return cartItemRepository.findByIdAndShoppingCartId(id, user.getId())
                 .orElseThrow(()
-                        -> new EntityNotFoundException("Can't find cart item by id: " + id));
+                        -> new OrderProcessingException("Can't find cart item by id: " + id));
     }
 }

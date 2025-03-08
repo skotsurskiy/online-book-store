@@ -2,11 +2,12 @@ package mate.academy.onlinebookstore.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.academy.onlinebookstore.dto.order.OrderDto;
 import mate.academy.onlinebookstore.dto.order.OrderRequestDto;
-import mate.academy.onlinebookstore.dto.order.OrderStatusDto;
+import mate.academy.onlinebookstore.dto.order.UpdateOrderStatusDto;
 import mate.academy.onlinebookstore.dto.orderitem.OrderItemDto;
 import mate.academy.onlinebookstore.service.order.OrderService;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +32,7 @@ public class OrderController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping
     public OrderDto completeOrder(
-            @RequestBody OrderRequestDto orderRequestDto,
+            @RequestBody @Valid OrderRequestDto orderRequestDto,
             Authentication authentication
     ) {
         return orderService.completeOrder(orderRequestDto, authentication);
@@ -75,9 +76,9 @@ public class OrderController {
     )
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{orderId}")
-    public OrderStatusDto updateOrderStatus(
+    public UpdateOrderStatusDto updateOrderStatus(
             @PathVariable Long orderId,
-            @RequestBody OrderStatusDto orderStatusDto
+            @RequestBody @Valid UpdateOrderStatusDto orderStatusDto
     ) {
         return orderService.updateOrderStatus(orderId, orderStatusDto);
     }

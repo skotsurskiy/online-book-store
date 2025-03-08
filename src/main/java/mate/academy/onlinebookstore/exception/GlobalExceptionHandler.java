@@ -31,9 +31,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
+    @ExceptionHandler(OrderProcessingException.class)
     public ResponseEntity<Map<String, Object>> handleEntityNotFoundExceptions(
-            EntityNotFoundException ex
+            OrderProcessingException ex
     ) {
         return getDefaultResponseEntity(HttpStatus.NOT_FOUND, ex);
     }
@@ -48,13 +48,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmptyCartException.class)
     public ResponseEntity<Map<String, Object>> handleEmptyCartException(
             EmptyCartException ex
-    ) {
-        return getDefaultResponseEntity(HttpStatus.BAD_REQUEST, ex);
-    }
-
-    @ExceptionHandler(InvalidOrderStatusException.class)
-    public ResponseEntity<Map<String, Object>> handleInvalidOrderStatusException(
-            InvalidOrderStatusException ex
     ) {
         return getDefaultResponseEntity(HttpStatus.BAD_REQUEST, ex);
     }
