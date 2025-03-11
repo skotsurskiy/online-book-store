@@ -1,12 +1,12 @@
 package mate.academy.onlinebookstore.service.book;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.academy.onlinebookstore.dto.book.BookDto;
 import mate.academy.onlinebookstore.dto.book.BookSearchParameters;
 import mate.academy.onlinebookstore.dto.book.BookWithoutCategoryIdDto;
 import mate.academy.onlinebookstore.dto.book.CreateBookRequestDto;
-import mate.academy.onlinebookstore.exception.OrderProcessingException;
 import mate.academy.onlinebookstore.mapper.BookMapper;
 import mate.academy.onlinebookstore.model.Book;
 import mate.academy.onlinebookstore.repository.SpecificationBuilder;
@@ -37,7 +37,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDto findBookById(Long id) {
         Book book = bookRepository.findBookById(id).orElseThrow(()
-                -> new OrderProcessingException("Can't find book by id: " + id)
+                -> new EntityNotFoundException("Can't find book by id: " + id)
         );
         return bookMapper.toBookDto(book);
     }
@@ -50,7 +50,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDto update(Long id, CreateBookRequestDto requestDto) {
         Book updatedBook = bookRepository.findBookById(id)
-                .orElseThrow(() -> new OrderProcessingException("Can't update book by id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Can't find book by id: " + id));
         bookMapper.updateBookFromDto(requestDto, updatedBook);
         return bookMapper.toBookDto(bookRepository.save(updatedBook));
     }

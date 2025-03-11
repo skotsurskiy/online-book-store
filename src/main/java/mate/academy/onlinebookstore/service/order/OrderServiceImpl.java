@@ -20,7 +20,6 @@ import mate.academy.onlinebookstore.model.ShoppingCart;
 import mate.academy.onlinebookstore.model.User;
 import mate.academy.onlinebookstore.repository.order.OrderRepository;
 import mate.academy.onlinebookstore.repository.shoppingcart.ShoppingCartRepository;
-import mate.academy.onlinebookstore.service.shoppingcart.ShoppingCartService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Transactional
 public class OrderServiceImpl implements OrderService {
-    private final ShoppingCartService shoppingCartService;
     private final OrderMapper orderMapper;
     private final OrderRepository orderRepository;
     private final ShoppingCartRepository shoppingCartRepository;
