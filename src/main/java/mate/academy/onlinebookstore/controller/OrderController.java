@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.academy.onlinebookstore.dto.order.OrderDto;
 import mate.academy.onlinebookstore.dto.order.OrderRequestDto;
+import mate.academy.onlinebookstore.dto.order.OrderStatusDto;
 import mate.academy.onlinebookstore.dto.order.UpdateOrderStatusDto;
 import mate.academy.onlinebookstore.dto.orderitem.OrderItemDto;
 import mate.academy.onlinebookstore.service.order.OrderService;
@@ -78,7 +79,7 @@ public class OrderController {
     @PatchMapping("/{orderId}")
     public UpdateOrderStatusDto updateOrderStatus(
             @PathVariable Long orderId,
-            @RequestBody @Valid UpdateOrderStatusDto orderStatusDto
+            @RequestBody @Valid OrderStatusDto orderStatusDto
     ) {
         return orderService.updateOrderStatus(orderId, orderStatusDto);
     }

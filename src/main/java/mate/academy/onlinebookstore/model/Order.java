@@ -45,6 +45,11 @@ public class Order {
     private Set<OrderItem> orderItems;
     private BigDecimal total;
 
+    public Order() {
+        this.status = Status.PENDING;
+        this.orderDate = LocalDateTime.now();
+    }
+
     public enum Status {
         PENDING,
         COMPLETED,

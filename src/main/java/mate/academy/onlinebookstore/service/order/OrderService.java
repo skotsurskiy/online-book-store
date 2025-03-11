@@ -3,6 +3,7 @@ package mate.academy.onlinebookstore.service.order;
 import java.util.List;
 import mate.academy.onlinebookstore.dto.order.OrderDto;
 import mate.academy.onlinebookstore.dto.order.OrderRequestDto;
+import mate.academy.onlinebookstore.dto.order.OrderStatusDto;
 import mate.academy.onlinebookstore.dto.order.UpdateOrderStatusDto;
 import mate.academy.onlinebookstore.dto.orderitem.OrderItemDto;
 import org.springframework.data.domain.Pageable;
@@ -21,5 +22,5 @@ public interface OrderService {
             Authentication authentication
     );
 
-    UpdateOrderStatusDto updateOrderStatus(Long orderId, UpdateOrderStatusDto orderStatusDto);
+    UpdateOrderStatusDto updateOrderStatus(Long orderId, OrderStatusDto orderStatusDto);
 }

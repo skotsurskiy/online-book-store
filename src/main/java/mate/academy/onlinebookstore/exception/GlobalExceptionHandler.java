@@ -45,13 +45,6 @@ public class GlobalExceptionHandler {
         return getDefaultResponseEntity(HttpStatus.CONFLICT, ex);
     }
 
-    @ExceptionHandler(EmptyCartException.class)
-    public ResponseEntity<Map<String, Object>> handleEmptyCartException(
-            EmptyCartException ex
-    ) {
-        return getDefaultResponseEntity(HttpStatus.BAD_REQUEST, ex);
-    }
-
     private String getErrorMessage(ObjectError objectError) {
         if (objectError instanceof FieldError fieldError) {
             String defaultMessage = fieldError.getDefaultMessage();

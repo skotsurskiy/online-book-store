@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import mate.academy.onlinebookstore.dto.order.OrderDto;
 import mate.academy.onlinebookstore.dto.order.OrderRequestDto;
+import mate.academy.onlinebookstore.dto.order.OrderStatusDto;
 import mate.academy.onlinebookstore.dto.order.UpdateOrderStatusDto;
 import mate.academy.onlinebookstore.dto.orderitem.OrderItemDto;
-import mate.academy.onlinebookstore.exception.EmptyCartException;
 import mate.academy.onlinebookstore.exception.OrderProcessingException;
 import mate.academy.onlinebookstore.mapper.OrderItemMapper;
 import mate.academy.onlinebookstore.mapper.OrderMapper;
@@ -43,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
                         -> new OrderProcessingException("Can't find shopping cart by id: "
                         + user.getId()));
         if (shoppingCart.getCartItems().isEmpty()) {
-            throw new EmptyCartException("Shopping cart is empty. "
+            throw new OrderProcessingException("Shopping cart is empty. "
                     + "Add items before placing an order.");
         }
         Order order = createOrder(shoppingCart, orderRequestDto);
@@ -87,7 +87,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public UpdateOrderStatusDto updateOrderStatus(
             Long orderId,
-            UpdateOrderStatusDto orderStatusDto
+            OrderStatusDto orderStatusDto
     ) {
         Order order = orderRepository.findById(orderId).orElseThrow(()
                 -> new OrderProcessingException("Can't find order by id: " + orderId));
