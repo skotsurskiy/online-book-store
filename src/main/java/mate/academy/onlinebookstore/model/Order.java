@@ -15,6 +15,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,9 +33,9 @@ public class Order {
     private User user;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status;
+    private Status status = Status.PENDING;
     @Column(nullable = false)
-    private LocalDateTime orderDate;
+    private LocalDateTime orderDate = LocalDateTime.now();
     @Column(nullable = false)
     private String shippingAddress;
     @OneToMany(
@@ -42,13 +43,8 @@ public class Order {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<OrderItem> orderItems;
+    private Set<OrderItem> orderItems = new HashSet<>();
     private BigDecimal total;
-
-    public Order() {
-        this.status = Status.PENDING;
-        this.orderDate = LocalDateTime.now();
-    }
 
     public enum Status {
         PENDING,
