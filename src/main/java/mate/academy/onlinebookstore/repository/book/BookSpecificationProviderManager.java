@@ -2,7 +2,7 @@ package mate.academy.onlinebookstore.repository.book;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import mate.academy.onlinebookstore.exception.EntityNotFoundException;
+import mate.academy.onlinebookstore.exception.OrderProcessingException;
 import mate.academy.onlinebookstore.model.Book;
 import mate.academy.onlinebookstore.repository.SpecificationProvider;
 import mate.academy.onlinebookstore.repository.SpecificationProviderManager;
@@ -19,7 +19,8 @@ public class BookSpecificationProviderManager implements SpecificationProviderMa
                 .filter(p -> p.getKey().equals(key))
                 .findFirst()
                 .orElseThrow(()
-                        -> new EntityNotFoundException("Can't find specification provider for key: "
+                        -> new OrderProcessingException("Can't find specification "
+                        + "provider for key: "
                         + key));
     }
 }
