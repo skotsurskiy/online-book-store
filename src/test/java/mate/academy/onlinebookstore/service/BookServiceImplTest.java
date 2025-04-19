@@ -35,6 +35,7 @@ class BookServiceImplTest {
     public static final long FIRST_VALID_ID = 1L;
     public static final long SECOND_VALID_ID = 2L;
     public static final long INVALID_ID = -1L;
+    public static final String EXPECTED_ERROR_MESSAGE = "Can't find book by id: -1";
     public static final String FIRST_BOOK_TITLE = "firstBook";
     public static final String SECOND_BOOK_TITLE = "secondBook";
     public static final String UPDATED_BOOK_TITLE = "Updated title";
@@ -107,7 +108,7 @@ class BookServiceImplTest {
                 () -> bookService.findBookById(INVALID_ID)
         );
 
-        assertEquals("Can't find book by id: " + INVALID_ID, exception.getMessage());
+        assertEquals(EXPECTED_ERROR_MESSAGE, exception.getMessage());
     }
 
     @Test
@@ -143,7 +144,7 @@ class BookServiceImplTest {
                 () -> bookService.update(INVALID_ID, requestDto)
         );
 
-        assertEquals("Can't find book by id: " + INVALID_ID, exception.getMessage());
+        assertEquals(EXPECTED_ERROR_MESSAGE, exception.getMessage());
     }
 
     @Test
