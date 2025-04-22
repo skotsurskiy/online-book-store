@@ -104,7 +104,7 @@ public class OrderServiceImpl implements OrderService {
 
     private void setOrderForOrderItems(Order order) {
         Set<OrderItem> orderItems = order.getOrderItems().stream()
-                .peek(orderItem -> orderItem.setOrder(order))
+                .peek(orderItem -> orderItem.setOrder(order))   
                 .collect(Collectors.toSet());
         order.setOrderItems(orderItems);
     }

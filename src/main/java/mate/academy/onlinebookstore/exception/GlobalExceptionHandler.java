@@ -1,5 +1,6 @@
 package mate.academy.onlinebookstore.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,8 +33,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(OrderProcessingException.class)
-    public ResponseEntity<Map<String, Object>> handleEntityNotFoundExceptions(
+    public ResponseEntity<Map<String, Object>> handleOrderProcessingException(
             OrderProcessingException ex
+    ) {
+        return getDefaultResponseEntity(HttpStatus.NOT_FOUND, ex);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleEntityNotFoundException(
+            EntityNotFoundException ex
     ) {
         return getDefaultResponseEntity(HttpStatus.NOT_FOUND, ex);
     }
