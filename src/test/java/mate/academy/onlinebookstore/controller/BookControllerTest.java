@@ -1,11 +1,24 @@
 package mate.academy.onlinebookstore.controller;
 
+import static mate.academy.onlinebookstore.util.TestUtil.BOOK_NOT_FOUND_ERROR_MESSAGE;
+import static mate.academy.onlinebookstore.util.TestUtil.FIELD_ID;
+import static mate.academy.onlinebookstore.util.TestUtil.FIRST_BOOK_TITLE;
+import static mate.academy.onlinebookstore.util.TestUtil.FIRST_LIST_INDEX;
+import static mate.academy.onlinebookstore.util.TestUtil.FIRST_VALID_ID;
+import static mate.academy.onlinebookstore.util.TestUtil.INVALID_ID;
+import static mate.academy.onlinebookstore.util.TestUtil.PARAM_TITLES;
+import static mate.academy.onlinebookstore.util.TestUtil.SECOND_BOOK_TITLE;
+import static mate.academy.onlinebookstore.util.TestUtil.THIRD_BOOK_TITLE;
+import static mate.academy.onlinebookstore.util.TestUtil.URI_BOOKS;
+import static mate.academy.onlinebookstore.util.TestUtil.URI_BOOKS_ID;
+import static mate.academy.onlinebookstore.util.TestUtil.URI_BOOKS_SEARCH;
+import static mate.academy.onlinebookstore.util.TestUtil.createBookDto;
+import static mate.academy.onlinebookstore.util.TestUtil.createBookRequestDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -34,23 +47,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BookControllerTest {
-    public static final String FIRST_BOOK_TITLE = "firstBook";
-    public static final String SECOND_BOOK_TITLE = "secondBook";
-    public static final String THIRD_BOOK_TITLE = "thirdBook";
-    public static final String AUTHOR = "author";
-    public static final BigDecimal PRICE = BigDecimal.valueOf(19.99);
-    public static final String DESCRIPTION = "description";
-    public static final String COVER_IMAGE = "coverImage";
-    public static final String URI_BOOKS = "/books";
-    public static final String URI_BOOKS_ID = "/books/{id}";
-    public static final long INITIAL_ID = 1L;
-    public static final String FIELD_ID = "id";
-    public static final String BOOK_NOT_FOUND_ERROR_MESSAGE = "Can't find book by id: -1";
-    public static final String ISBN = "1111-2222-3333-4444";
-    public static final long INVALID_ID = -1L;
-    public static final String URI_BOOKS_SEARCH = "/books/search";
-    public static final String PARAM_TITLES = "titles";
-    public static final int FIRST_LIST_INDEX = 0;
     private static MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
@@ -143,7 +139,7 @@ class BookControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get(URI_BOOKS_ID, INITIAL_ID)
+                                .get(URI_BOOKS_ID, FIRST_VALID_ID)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
@@ -202,7 +198,7 @@ class BookControllerTest {
         CreateBookRequestDto requestDto = createBookRequestDto(FIRST_BOOK_TITLE);
         BookDto expected = createBookDto(requestDto.getTitle());
         expected.setIsbn(requestDto.getIsbn());
-        expected.setCategoryIds(List.of(INITIAL_ID));
+        expected.setCategoryIds(List.of(FIRST_VALID_ID));
 
         String json = objectMapper.writeValueAsString(requestDto);
 
@@ -237,7 +233,7 @@ class BookControllerTest {
     void deleteBook_WithValidId_expectNoContentStatus() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders
-                        .delete(URI_BOOKS_ID, INITIAL_ID)
+                        .delete(URI_BOOKS_ID, FIRST_VALID_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
                 .andReturn();
@@ -270,7 +266,7 @@ class BookControllerTest {
         String json = objectMapper.writeValueAsString(requestDto);
 
         MvcResult mvcResult = mockMvc.perform(
-                MockMvcRequestBuilders.put(URI_BOOKS_ID, INITIAL_ID)
+                MockMvcRequestBuilders.put(URI_BOOKS_ID, FIRST_VALID_ID)
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -347,29 +343,5 @@ class BookControllerTest {
                 .usingRecursiveComparison()
                 .ignoringFields(FIELD_ID)
                 .isEqualTo(expected.get(FIRST_LIST_INDEX));
-    }
-
-    private BookDto createBookDto(String title) {
-        BookDto bookDto = new BookDto();
-        bookDto.setTitle(title);
-        bookDto.setAuthor(AUTHOR);
-        bookDto.setPrice(PRICE);
-        bookDto.setIsbn(ISBN);
-        bookDto.setDescription(DESCRIPTION);
-        bookDto.setCoverImage(COVER_IMAGE);
-        bookDto.setCategoryIds(List.of());
-        return bookDto;
-    }
-
-    private CreateBookRequestDto createBookRequestDto(String title) {
-        CreateBookRequestDto requestDto = new CreateBookRequestDto();
-        requestDto.setTitle(title);
-        requestDto.setAuthor(AUTHOR);
-        requestDto.setPrice(PRICE);
-        requestDto.setIsbn(ISBN);
-        requestDto.setCategoryIds(List.of(INITIAL_ID));
-        requestDto.setDescription(DESCRIPTION);
-        requestDto.setCoverImage(COVER_IMAGE);
-        return requestDto;
     }
 }

@@ -30,7 +30,7 @@ public class AuthenticationController {
             summary = "register user",
             description = "endpoint for user registration"
     )
-    @PostMapping("/register")
+    @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponseDto register(@RequestBody @Valid UserRegistrationRequestDto requestDto)
             throws RegistrationException {

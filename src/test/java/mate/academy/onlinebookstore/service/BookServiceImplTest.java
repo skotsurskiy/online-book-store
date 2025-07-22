@@ -1,21 +1,38 @@
 package mate.academy.onlinebookstore.service;
 
+import static mate.academy.onlinebookstore.util.TestUtil.AUTHOR;
+import static mate.academy.onlinebookstore.util.TestUtil.BOOK_NOT_FOUND_ERROR_MESSAGE;
+import static mate.academy.onlinebookstore.util.TestUtil.COVER_IMAGE;
+import static mate.academy.onlinebookstore.util.TestUtil.DESCRIPTION;
+import static mate.academy.onlinebookstore.util.TestUtil.EXPECTED_LIST_SIZE;
+import static mate.academy.onlinebookstore.util.TestUtil.FIRST_BOOK_TITLE;
+import static mate.academy.onlinebookstore.util.TestUtil.FIRST_LIST_INDEX;
+import static mate.academy.onlinebookstore.util.TestUtil.FIRST_VALID_ID;
+import static mate.academy.onlinebookstore.util.TestUtil.INVALID_ID;
+import static mate.academy.onlinebookstore.util.TestUtil.ISBN;
+import static mate.academy.onlinebookstore.util.TestUtil.PRICE;
+import static mate.academy.onlinebookstore.util.TestUtil.SECOND_BOOK_TITLE;
+import static mate.academy.onlinebookstore.util.TestUtil.SECOND_LIST_INDEX;
+import static mate.academy.onlinebookstore.util.TestUtil.SECOND_VALID_ID;
+import static mate.academy.onlinebookstore.util.TestUtil.UPDATED_BOOK_TITLE;
+import static mate.academy.onlinebookstore.util.TestUtil.createBook;
+import static mate.academy.onlinebookstore.util.TestUtil.createBookDto;
+import static mate.academy.onlinebookstore.util.TestUtil.createBookRequestDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import mate.academy.onlinebookstore.dto.book.BookDto;
 import mate.academy.onlinebookstore.dto.book.BookSearchParameters;
 import mate.academy.onlinebookstore.dto.book.BookWithoutCategoryIdDto;
 import mate.academy.onlinebookstore.dto.book.CreateBookRequestDto;
 import mate.academy.onlinebookstore.mapper.BookMapper;
 import mate.academy.onlinebookstore.model.Book;
-import mate.academy.onlinebookstore.model.Category;
 import mate.academy.onlinebookstore.repository.SpecificationBuilder;
 import mate.academy.onlinebookstore.repository.book.BookRepository;
 import mate.academy.onlinebookstore.service.book.BookServiceImpl;
@@ -32,22 +49,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
 class BookServiceImplTest {
-    public static final long FIRST_VALID_ID = 1L;
-    public static final long SECOND_VALID_ID = 2L;
-    public static final long INVALID_ID = -1L;
-    public static final String EXPECTED_ERROR_MESSAGE = "Can't find book by id: -1";
-    public static final String FIRST_BOOK_TITLE = "firstBook";
-    public static final String SECOND_BOOK_TITLE = "secondBook";
-    public static final String UPDATED_BOOK_TITLE = "Updated title";
-    public static final String AUTHOR = "Author";
-    public static final String ISBN = "1111-2222-3333-4444";
-    public static final BigDecimal PRICE = BigDecimal.valueOf(19.99);
-    public static final String DESCRIPTION = "description";
-    public static final String COVER_IMAGE = "CoverImage";
-    public static final String CATEGORY = "Category";
-    public static final int FIRST_LIST_INDEX = 0;
-    public static final int SECOND_LIST_INDEX = 1;
-    public static final int EXPECTED_LIST_SIZE = 2;
     @Mock
     private BookRepository bookRepository;
     @Mock
@@ -78,6 +79,10 @@ class BookServiceImplTest {
         assertEquals(EXPECTED_LIST_SIZE, actual.size());
         assertEquals(firstBookDto, actual.get(FIRST_LIST_INDEX));
         assertEquals(secondBookDto, actual.get(SECOND_LIST_INDEX));
+
+        verify(bookRepository).findAll(Pageable.unpaged());
+        verify(bookMapper).toBookDto(firstBook);
+        verify(bookMapper).toBookDto(secondBook);
     }
 
     @Test
@@ -94,6 +99,9 @@ class BookServiceImplTest {
         BookDto actual = bookService.findBookById(FIRST_VALID_ID);
 
         assertEquals(bookDto, actual);
+
+        verify(bookRepository).findBookById(FIRST_VALID_ID);
+        verify(bookMapper).toBookDto(book);
     }
 
     @Test
@@ -108,7 +116,7 @@ class BookServiceImplTest {
                 () -> bookService.findBookById(INVALID_ID)
         );
 
-        assertEquals(EXPECTED_ERROR_MESSAGE, exception.getMessage());
+        assertEquals(BOOK_NOT_FOUND_ERROR_MESSAGE, exception.getMessage());
     }
 
     @Test
@@ -117,7 +125,7 @@ class BookServiceImplTest {
             """)
     void update_WithValidIdAndRequestDto_returnOneBookDto() {
         Book initialBook = createBook(FIRST_VALID_ID, FIRST_BOOK_TITLE);
-        CreateBookRequestDto requestDto = createBookRequestDto();
+        CreateBookRequestDto requestDto = createBookRequestDto(UPDATED_BOOK_TITLE);
         BookDto updatedBook = createBookDto(FIRST_VALID_ID, UPDATED_BOOK_TITLE);
 
         when(bookRepository.findBookById(FIRST_VALID_ID)).thenReturn(Optional.of(initialBook));
@@ -128,6 +136,11 @@ class BookServiceImplTest {
         BookDto actual = bookService.update(FIRST_VALID_ID, requestDto);
 
         assertEquals(updatedBook, actual);
+
+        verify(bookRepository).findBookById(FIRST_VALID_ID);
+        verify(bookMapper).updateBookFromDto(requestDto, initialBook);
+        verify(bookRepository).save(initialBook);
+        verify(bookMapper).toBookDto(initialBook);
     }
 
     @Test
@@ -135,7 +148,7 @@ class BookServiceImplTest {
             update book by invalid id, throw EntityNotFoundException
             """)
     void update_WithInvalidId_ThrowEntityNotFoundException() {
-        CreateBookRequestDto requestDto = createBookRequestDto();
+        CreateBookRequestDto requestDto = createBookRequestDto(UPDATED_BOOK_TITLE);
 
         when(bookRepository.findBookById(INVALID_ID)).thenReturn(Optional.empty());
 
@@ -144,7 +157,7 @@ class BookServiceImplTest {
                 () -> bookService.update(INVALID_ID, requestDto)
         );
 
-        assertEquals(EXPECTED_ERROR_MESSAGE, exception.getMessage());
+        assertEquals(BOOK_NOT_FOUND_ERROR_MESSAGE, exception.getMessage());
     }
 
     @Test
@@ -170,6 +183,9 @@ class BookServiceImplTest {
 
         assertEquals(SECOND_LIST_INDEX, actual.size());
         assertEquals(bookDto, actual.get(FIRST_LIST_INDEX));
+
+        verify(bookRepository).findAll(bookSpecification, Pageable.unpaged());
+        verify(bookMapper).toBookDto(book);
     }
 
     @Test
@@ -198,44 +214,8 @@ class BookServiceImplTest {
 
         assertEquals(SECOND_LIST_INDEX, actual.size());
         assertEquals(bookWithoutCategoryIdDto, actual.get(FIRST_LIST_INDEX));
-    }
 
-    private Book createBook(Long id, String title) {
-        Book book = new Book();
-        book.setId(id);
-        book.setTitle(title);
-        book.setAuthor(AUTHOR);
-        book.setPrice(PRICE);
-        book.setIsbn(ISBN);
-        book.setCategories(Set.of(createCategory(id)));
-        return book;
-    }
-
-    private Category createCategory(Long id) {
-        Category category = new Category();
-        category.setId(id);
-        category.setName(CATEGORY);
-        return category;
-    }
-
-    private CreateBookRequestDto createBookRequestDto() {
-        CreateBookRequestDto requestDto = new CreateBookRequestDto();
-        requestDto.setTitle(UPDATED_BOOK_TITLE);
-        requestDto.setAuthor(AUTHOR);
-        requestDto.setIsbn(ISBN);
-        requestDto.setPrice(PRICE);
-        requestDto.setCategoryIds(List.of(FIRST_VALID_ID));
-        return requestDto;
-    }
-
-    private BookDto createBookDto(Long id, String title) {
-        BookDto bookDto = new BookDto();
-        bookDto.setId(id);
-        bookDto.setTitle(title);
-        bookDto.setAuthor(AUTHOR);
-        bookDto.setPrice(PRICE);
-        bookDto.setIsbn(ISBN);
-        bookDto.setCategoryIds(List.of(id));
-        return bookDto;
+        verify(bookRepository).findAllByCategoryId(FIRST_VALID_ID, Pageable.unpaged());
+        verify(bookMapper).toBookWithoutCategoryIdDto(book);
     }
 }

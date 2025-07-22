@@ -1,5 +1,15 @@
 package mate.academy.onlinebookstore.controller;
 
+import static mate.academy.onlinebookstore.util.TestUtil.CATEGORY_NOT_FOUND_ERROR_MESSAGE;
+import static mate.academy.onlinebookstore.util.TestUtil.FIELD_ID;
+import static mate.academy.onlinebookstore.util.TestUtil.FIRST_CATEGORY_TITLE;
+import static mate.academy.onlinebookstore.util.TestUtil.FIRST_VALID_ID;
+import static mate.academy.onlinebookstore.util.TestUtil.INVALID_ID;
+import static mate.academy.onlinebookstore.util.TestUtil.SECOND_CATEGORY_TITLE;
+import static mate.academy.onlinebookstore.util.TestUtil.SECOND_VALID_ID;
+import static mate.academy.onlinebookstore.util.TestUtil.URI_CATEGORIES;
+import static mate.academy.onlinebookstore.util.TestUtil.URI_CATEGORIES_ID;
+import static mate.academy.onlinebookstore.util.TestUtil.URI_CATEGORIES_ID_BOOKS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -35,16 +45,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CategoryControllerTest {
-    public static final String URI_CATEGORIES = "/categories";
-    public static final String URI_CATEGORIES_ID = "/categories/{id}";
-    public static final String FIRST_CATEGORY = "firstCategory";
-    public static final String SECOND_CATEGORY = "secondCategory";
-    public static final long INVALID_ID = -1L;
-    public static final String CATEGORY_NOT_FOUND_ERROR_MESSAGE = "Can't find category by id: -1";
-    public static final String URI_CATEGORIES_ID_BOOKS = "/categories/{id}/books";
-    public static final long FIRST_ID_INDEX = 1L;
-    public static final long SECOND_ID_INDEX = 2L;
-    public static final String FIELD_ID = "id";
     private static MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
@@ -90,14 +90,14 @@ class CategoryControllerTest {
     )
     void findAllCategories_ReturnListOfCategoryResponseDtos() throws Exception {
         CategoryResponseDto firstCategory = new CategoryResponseDto(
-                FIRST_ID_INDEX,
-                FIRST_CATEGORY,
-                FIRST_CATEGORY
+                FIRST_VALID_ID,
+                FIRST_CATEGORY_TITLE,
+                FIRST_CATEGORY_TITLE
         );
         CategoryResponseDto secondCategory = new CategoryResponseDto(
-                SECOND_ID_INDEX,
-                SECOND_CATEGORY,
-                SECOND_CATEGORY
+                SECOND_VALID_ID,
+                SECOND_CATEGORY_TITLE,
+                SECOND_CATEGORY_TITLE
         );
 
         List<CategoryResponseDto> expected = List.of(firstCategory, secondCategory);
@@ -129,14 +129,14 @@ class CategoryControllerTest {
     )
     void findCategoryById_WithValidId_ReturnResponseDto() throws Exception {
         CategoryResponseDto expected = new CategoryResponseDto(
-                FIRST_ID_INDEX,
-                FIRST_CATEGORY,
-                FIRST_CATEGORY
+                FIRST_VALID_ID,
+                FIRST_CATEGORY_TITLE,
+                FIRST_CATEGORY_TITLE
         );
 
         MvcResult mvcResult = mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get(URI_CATEGORIES_ID, FIRST_ID_INDEX)
+                                .get(URI_CATEGORIES_ID, FIRST_VALID_ID)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
@@ -182,7 +182,7 @@ class CategoryControllerTest {
     void findBooksByCategoryId_WithValidId_ReturnListOfBookWithoutCategoryIdDtos()
             throws Exception {
         BookWithoutCategoryIdDto firstBook = new BookWithoutCategoryIdDto(
-                FIRST_ID_INDEX,
+                FIRST_VALID_ID,
                 "firstBook",
                 "author",
                 "1111-2222-3333-4444",
@@ -191,7 +191,7 @@ class CategoryControllerTest {
                 "coverImage"
         );
         BookWithoutCategoryIdDto secondBook = new BookWithoutCategoryIdDto(
-                SECOND_ID_INDEX,
+                SECOND_VALID_ID,
                 "secondBook",
                 "author",
                 "4444-5555-6666-7777",
@@ -204,7 +204,7 @@ class CategoryControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get(URI_CATEGORIES_ID_BOOKS, FIRST_ID_INDEX)
+                                .get(URI_CATEGORIES_ID_BOOKS, FIRST_VALID_ID)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
@@ -224,13 +224,13 @@ class CategoryControllerTest {
             """)
     void createCategory_WithValidRole_ReturnCategoryResponseDto() throws Exception {
         CategoryRequestDto requestDto = new CategoryRequestDto(
-                FIRST_CATEGORY,
-                FIRST_CATEGORY
+                FIRST_CATEGORY_TITLE,
+                FIRST_CATEGORY_TITLE
         );
         CategoryResponseDto expected = new CategoryResponseDto(
-                FIRST_ID_INDEX,
-                FIRST_CATEGORY,
-                FIRST_CATEGORY
+                FIRST_VALID_ID,
+                FIRST_CATEGORY_TITLE,
+                FIRST_CATEGORY_TITLE
         );
 
         String json = objectMapper.writeValueAsString(requestDto);
@@ -265,20 +265,20 @@ class CategoryControllerTest {
     )
     void updateCategory_WithValidRoleAndValidId_ReturnCategoryResponseDto() throws Exception {
         CategoryRequestDto requestDto = new CategoryRequestDto(
-                SECOND_CATEGORY,
-                SECOND_CATEGORY
+                SECOND_CATEGORY_TITLE,
+                SECOND_CATEGORY_TITLE
         );
         CategoryResponseDto expected = new CategoryResponseDto(
-                FIRST_ID_INDEX,
-                SECOND_CATEGORY,
-                SECOND_CATEGORY
+                FIRST_VALID_ID,
+                SECOND_CATEGORY_TITLE,
+                SECOND_CATEGORY_TITLE
         );
 
         String json = objectMapper.writeValueAsString(requestDto);
 
         MvcResult mvcResult = mockMvc.perform(
                         MockMvcRequestBuilders
-                                .put(URI_CATEGORIES_ID, FIRST_ID_INDEX)
+                                .put(URI_CATEGORIES_ID, FIRST_VALID_ID)
                                 .content(json)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -302,8 +302,8 @@ class CategoryControllerTest {
             """)
     void updateCategory_WithInvalidId_throwEntityNotFoundException() throws Exception {
         CategoryRequestDto requestDto = new CategoryRequestDto(
-                SECOND_CATEGORY,
-                SECOND_CATEGORY
+                SECOND_CATEGORY_TITLE,
+                SECOND_CATEGORY_TITLE
         );
 
         String json = objectMapper.writeValueAsString(requestDto);
@@ -332,7 +332,7 @@ class CategoryControllerTest {
     void deleteBook_WithValidRole_expectNoContentStatus() throws Exception {
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .delete(URI_CATEGORIES_ID, FIRST_ID_INDEX)
+                                .delete(URI_CATEGORIES_ID, FIRST_VALID_ID)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
                 .andReturn();

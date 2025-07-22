@@ -1,5 +1,12 @@
 package mate.academy.onlinebookstore.service;
 
+import static mate.academy.onlinebookstore.util.TestUtil.CATEGORY_NOT_FOUND_ERROR_MESSAGE;
+import static mate.academy.onlinebookstore.util.TestUtil.DESCRIPTION;
+import static mate.academy.onlinebookstore.util.TestUtil.FIRST_CATEGORY_TITLE;
+import static mate.academy.onlinebookstore.util.TestUtil.FIRST_VALID_ID;
+import static mate.academy.onlinebookstore.util.TestUtil.INVALID_ID;
+import static mate.academy.onlinebookstore.util.TestUtil.SECOND_CATEGORY_TITLE;
+import static mate.academy.onlinebookstore.util.TestUtil.SECOND_VALID_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
@@ -25,13 +32,6 @@ import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceImplTest {
-    public static final String FIRST_CATEGORY_TITLE = "firstCategory";
-    public static final String SECOND_CATEGORY_TITLE = "secondCategory";
-    public static final long FIRST_VALID_ID = 1L;
-    public static final long SECOND_VALID_ID = 2L;
-    public static final String DESCRIPTION = "description";
-    public static final long INVALID_ID = -1L;
-    public static final String CATEGORY_NOT_FOUND_ERROR_MESSAGE = "Can't find category by id: -1";
     @InjectMocks
     private CategoryServiceImpl categoryService;
     @Mock
