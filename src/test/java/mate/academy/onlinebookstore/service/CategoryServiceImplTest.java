@@ -1,6 +1,5 @@
 package mate.academy.onlinebookstore.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
@@ -71,12 +70,8 @@ class CategoryServiceImplTest {
         List<CategoryResponseDto> actual = categoryService.findAll(Pageable.unpaged());
 
         assertEquals(categories.size(), actual.size());
-        assertThat(actual.get(0))
-                .usingRecursiveComparison()
-                .isEqualTo(firstCategoryResponseDto);
-        assertThat(actual.get(1))
-                .usingRecursiveComparison()
-                .isEqualTo(secondCategoryResponseDto);
+        assertEquals(firstCategoryResponseDto, actual.get(0));
+        assertEquals(secondCategoryResponseDto, actual.get(1));
     }
 
     @Test
@@ -96,9 +91,7 @@ class CategoryServiceImplTest {
 
         CategoryResponseDto actual = categoryService.findById(FIRST_VALID_ID);
 
-        assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(responseDto);
+        assertEquals(responseDto, actual);
     }
 
     @Test
@@ -139,7 +132,7 @@ class CategoryServiceImplTest {
 
         CategoryResponseDto actual = categoryService.update(categoryRequestDto, FIRST_VALID_ID);
 
-        assertEquals(expected.name(), actual.name());
+        assertEquals(expected, actual);
     }
 
     @Test

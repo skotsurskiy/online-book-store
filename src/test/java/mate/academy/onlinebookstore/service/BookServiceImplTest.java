@@ -76,8 +76,8 @@ class BookServiceImplTest {
         List<BookDto> actual = bookService.findAll(Pageable.unpaged());
 
         assertEquals(EXPECTED_LIST_SIZE, actual.size());
-        assertEquals(firstBookDto.getTitle(), actual.get(FIRST_LIST_INDEX).getTitle());
-        assertEquals(secondBookDto.getTitle(), actual.get(SECOND_LIST_INDEX).getTitle());
+        assertEquals(firstBookDto, actual.get(FIRST_LIST_INDEX));
+        assertEquals(secondBookDto, actual.get(SECOND_LIST_INDEX));
     }
 
     @Test
@@ -93,7 +93,7 @@ class BookServiceImplTest {
 
         BookDto actual = bookService.findBookById(FIRST_VALID_ID);
 
-        assertEquals(bookDto.getTitle(), actual.getTitle());
+        assertEquals(bookDto, actual);
     }
 
     @Test
@@ -169,7 +169,7 @@ class BookServiceImplTest {
         List<BookDto> actual = bookService.search(searchParameters, Pageable.unpaged());
 
         assertEquals(SECOND_LIST_INDEX, actual.size());
-        assertEquals(FIRST_BOOK_TITLE, actual.get(FIRST_LIST_INDEX).getTitle());
+        assertEquals(bookDto, actual.get(FIRST_LIST_INDEX));
     }
 
     @Test
@@ -197,7 +197,7 @@ class BookServiceImplTest {
                 = bookService.findAllByCategory(FIRST_VALID_ID, Pageable.unpaged());
 
         assertEquals(SECOND_LIST_INDEX, actual.size());
-        assertEquals(FIRST_BOOK_TITLE, actual.get(FIRST_LIST_INDEX).title());
+        assertEquals(bookWithoutCategoryIdDto, actual.get(FIRST_LIST_INDEX));
     }
 
     private Book createBook(Long id, String title) {

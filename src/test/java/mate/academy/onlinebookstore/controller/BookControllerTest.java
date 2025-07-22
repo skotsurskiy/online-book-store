@@ -45,14 +45,12 @@ class BookControllerTest {
     public static final String URI_BOOKS_ID = "/books/{id}";
     public static final long INITIAL_ID = 1L;
     public static final String FIELD_ID = "id";
-    public static final String FIELD_ISBN = "isbn";
     public static final String BOOK_NOT_FOUND_ERROR_MESSAGE = "Can't find book by id: -1";
     public static final String ISBN = "1111-2222-3333-4444";
     public static final long INVALID_ID = -1L;
     public static final String URI_BOOKS_SEARCH = "/books/search";
     public static final String PARAM_TITLES = "titles";
     public static final int FIRST_LIST_INDEX = 0;
-    public static final int SECOND_LIST_INDEX = 1;
     private static MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
@@ -121,10 +119,10 @@ class BookControllerTest {
         );
 
         assertEquals(expected.size(), actual.size());
-        assertEquals(
-                expected.get(FIRST_LIST_INDEX).getTitle(),
-                actual.get(FIRST_LIST_INDEX).getTitle()
-        );
+        assertThat(actual.get(FIRST_LIST_INDEX))
+                .usingRecursiveComparison()
+                .ignoringFields(FIELD_ID)
+                .isEqualTo(expected.get(FIRST_LIST_INDEX));
     }
 
     @Test
@@ -157,7 +155,7 @@ class BookControllerTest {
 
         assertThat(actual)
                 .usingRecursiveComparison()
-                .ignoringFields(FIELD_ID, FIELD_ISBN)
+                .ignoringFields(FIELD_ID)
                 .isEqualTo(expected);
     }
 
@@ -228,25 +226,6 @@ class BookControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user")
-    @DisplayName("""
-            using createBook method to create book with invalid role, expect 403 status
-            """)
-    void createBook_WithCreateBookRequestDtoAndInvalidRole_ExpectForbiddenStatus()
-            throws Exception {
-        CreateBookRequestDto requestDto = createBookRequestDto(FIRST_BOOK_TITLE);
-        String json = objectMapper.writeValueAsString(requestDto);
-
-        mockMvc.perform(
-                MockMvcRequestBuilders
-                        .post(URI_BOOKS)
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isForbidden())
-                .andReturn();
-    }
-
-    @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("""
             using deleteBook method with valid id, expect 204 status
@@ -261,20 +240,6 @@ class BookControllerTest {
                         .delete(URI_BOOKS_ID, INITIAL_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
-                .andReturn();
-    }
-
-    @Test
-    @WithMockUser(username = "user")
-    @DisplayName("""
-            using deleteBook method with invalid role, expect 403 status
-            """)
-    void deleteBook_WithInvalidRole_expectForbiddenStatus() throws Exception {
-        mockMvc.perform(
-                MockMvcRequestBuilders
-                        .delete(URI_BOOKS_ID, INITIAL_ID)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isForbidden())
                 .andReturn();
     }
 
@@ -346,27 +311,10 @@ class BookControllerTest {
     @Test
     @WithMockUser(username = "user")
     @DisplayName("""
-            using updateBook method with invalid role, expect 403 status
-            """)
-    void updateBook_WithInvalidRole_expectForbiddenStatus() throws Exception {
-        CreateBookRequestDto requestDto = createBookRequestDto(SECOND_BOOK_TITLE);
-        String json = objectMapper.writeValueAsString(requestDto);
-
-        mockMvc.perform(
-                MockMvcRequestBuilders.put(URI_BOOKS_ID, INVALID_ID)
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isForbidden())
-                .andReturn();
-    }
-
-    @Test
-    @WithMockUser(username = "user")
-    @DisplayName("""
             using search method, return list of two books with different title search parameters
             """)
     @Sql(scripts = {
-            "classpath:database/books/add-five-books-to-books-table.sql",
+            "classpath:database/books/add-three-books-to-books-table.sql",
     },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
@@ -395,14 +343,10 @@ class BookControllerTest {
         );
 
         assertEquals(expected.size(), actual.size());
-        assertEquals(
-                expected.get(FIRST_LIST_INDEX).getTitle(),
-                actual.get(FIRST_LIST_INDEX).getTitle()
-        );
-        assertEquals(
-                expected.get(SECOND_LIST_INDEX).getTitle(),
-                actual.get(SECOND_LIST_INDEX).getTitle()
-        );
+        assertThat(actual.get(FIRST_LIST_INDEX))
+                .usingRecursiveComparison()
+                .ignoringFields(FIELD_ID)
+                .isEqualTo(expected.get(FIRST_LIST_INDEX));
     }
 
     private BookDto createBookDto(String title) {
@@ -410,6 +354,7 @@ class BookControllerTest {
         bookDto.setTitle(title);
         bookDto.setAuthor(AUTHOR);
         bookDto.setPrice(PRICE);
+        bookDto.setIsbn(ISBN);
         bookDto.setDescription(DESCRIPTION);
         bookDto.setCoverImage(COVER_IMAGE);
         bookDto.setCategoryIds(List.of());

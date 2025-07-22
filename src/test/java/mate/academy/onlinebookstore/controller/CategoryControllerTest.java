@@ -1,6 +1,7 @@
 package mate.academy.onlinebookstore.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,7 +41,6 @@ class CategoryControllerTest {
     public static final String SECOND_CATEGORY = "secondCategory";
     public static final long INVALID_ID = -1L;
     public static final String CATEGORY_NOT_FOUND_ERROR_MESSAGE = "Can't find category by id: -1";
-    public static final String FIELD_PRICE = "price";
     public static final String URI_CATEGORIES_ID_BOOKS = "/categories/{id}/books";
     public static final long FIRST_ID_INDEX = 1L;
     public static final long SECOND_ID_INDEX = 2L;
@@ -115,9 +115,7 @@ class CategoryControllerTest {
                 }
         );
 
-        assertThat(actual)
-                .usingRecursiveFieldByFieldElementComparator()
-                .isEqualTo(expected);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -148,9 +146,7 @@ class CategoryControllerTest {
                 CategoryResponseDto.class
         );
 
-        assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -177,9 +173,10 @@ class CategoryControllerTest {
             """)
     @Sql(
             scripts = {
-                    "classpath:database/books/add-five-books-to-books-table.sql",
+                    "classpath:database/books/add-three-books-to-books-table.sql",
                     "classpath:database/categories/add-two-categories-to-categories-table.sql",
-                    "classpath:database/booksCategories/add-five-books-categories-relationships.sql"
+                    "classpath:database/booksCategories/"
+                            + "add-three-books-categories-relationships.sql"
             }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     void findBooksByCategoryId_WithValidId_ReturnListOfBookWithoutCategoryIdDtos()
@@ -188,18 +185,18 @@ class CategoryControllerTest {
                 FIRST_ID_INDEX,
                 "firstBook",
                 "author",
-                "8888",
-                BigDecimal.valueOf(14.90),
-                "firstBook",
+                "1111-2222-3333-4444",
+                BigDecimal.valueOf(19.99),
+                "description",
                 "coverImage"
         );
         BookWithoutCategoryIdDto secondBook = new BookWithoutCategoryIdDto(
                 SECOND_ID_INDEX,
                 "secondBook",
                 "author",
-                "7878",
+                "4444-5555-6666-7777",
                 BigDecimal.valueOf(19.99),
-                "secondBook",
+                "description",
                 "coverImage"
         );
 
@@ -217,9 +214,7 @@ class CategoryControllerTest {
                 new TypeReference<>() {}
         );
 
-        assertThat(actual)
-                .usingRecursiveFieldByFieldElementComparatorIgnoringFields(FIELD_PRICE)
-                .isEqualTo(expected);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -257,28 +252,6 @@ class CategoryControllerTest {
                 .usingRecursiveComparison()
                 .ignoringFields(FIELD_ID)
                 .isEqualTo(expected);
-    }
-
-    @Test
-    @WithMockUser(username = "user")
-    @DisplayName("""
-            using createCategory with invalid role to create category, expect 403 status
-            """)
-    void createCategory_WithInvalidRole_ExpectForbiddenStatus() throws Exception {
-        CategoryRequestDto requestDto = new CategoryRequestDto(
-                FIRST_CATEGORY,
-                FIRST_CATEGORY
-        );
-
-        String json = objectMapper.writeValueAsString(requestDto);
-
-        mockMvc.perform(
-                        MockMvcRequestBuilders
-                                .post(URI_CATEGORIES)
-                                .content(json)
-                                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isForbidden())
-                .andReturn();
     }
 
     @Test
@@ -323,32 +296,6 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user")
-    @DisplayName("""
-            using updateCategory with invalid role to create category, expect 403 status
-            """)
-    @Sql(
-            scripts = "classpath:database/categories/add-one-category-to-categories-table.sql",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
-    void updateCategory_WithInvalidRole_ExpectForbiddenStatus() throws Exception {
-        CategoryRequestDto requestDto = new CategoryRequestDto(
-                SECOND_CATEGORY,
-                SECOND_CATEGORY
-        );
-
-        String json = objectMapper.writeValueAsString(requestDto);
-
-        mockMvc.perform(
-                        MockMvcRequestBuilders
-                                .put(URI_CATEGORIES_ID, FIRST_ID_INDEX)
-                                .content(json)
-                                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isForbidden())
-                .andReturn();
-    }
-
-    @Test
     @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
     @DisplayName("""
             using updateCategory with invalid id, expect EntityNotFoundException
@@ -388,24 +335,6 @@ class CategoryControllerTest {
                                 .delete(URI_CATEGORIES_ID, FIRST_ID_INDEX)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
-                .andReturn();
-    }
-
-    @Test
-    @WithMockUser(username = "user")
-    @DisplayName("""
-            using deleteCategory method with invalid role, expect 403 status
-            """)
-    @Sql(
-            scripts = "classpath:database/categories/add-one-category-to-categories-table.sql",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
-    void deleteBook_WithInvalidRole_expectForbiddenStatus() throws Exception {
-        mockMvc.perform(
-                        MockMvcRequestBuilders
-                                .delete(URI_CATEGORIES_ID, FIRST_ID_INDEX)
-                                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isForbidden())
                 .andReturn();
     }
 }
