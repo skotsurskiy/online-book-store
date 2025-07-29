@@ -3,10 +3,12 @@ package mate.academy.onlinebookstore.repository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 import mate.academy.onlinebookstore.model.Book;
 import mate.academy.onlinebookstore.repository.book.BookRepository;
+import mate.academy.onlinebookstore.repository.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,8 @@ import org.springframework.test.context.jdbc.Sql;
 class BookRepositoryTest {
     @Autowired
     private BookRepository bookRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     @DisplayName("""
@@ -39,7 +43,7 @@ class BookRepositoryTest {
             scripts = "classpath:database/delete-all-from-tables.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
-    void findAllByCategoryId_WhereCategoryIdIsOne_ReturnsTwoBooks() {
+    void findAllByCategoryId_WhereCategoryIdIsOne_ReturnsTwoBooks() throws SQLException {
         List<Book> expected = List.of(
                 createBook("firstBook", "1111-2222-3333-4444"),
                 createBook("secondBook", "4444-5555-6666-7777")
