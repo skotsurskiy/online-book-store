@@ -38,7 +38,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         CartItem cartItem = cartItemMapper.toCartItemEntity(requestDto);
         cartItem.setShoppingCart(shoppingCart);
         cartItem.setBook(bookRepository.findBookById(requestDto.getBookId())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find book with id: "
+                .orElseThrow(() -> new EntityNotFoundException("Can't find book by id: "
                         + requestDto.getBookId())));
         shoppingCart.getCartItems().add(cartItem);
         shoppingCartRepository.save(shoppingCart);
@@ -51,7 +51,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             CartItemUpdateQuantityDto updateQuantityDto
     ) {
         CartItem cartItemEntity = findCartItemById(id);
-        cartItemEntity.setQuantity(updateQuantityDto.getQuantity());
+        cartItemEntity.setQuantity(updateQuantityDto.quantity());
         cartItemRepository.save(cartItemEntity);
 
         return shoppingCartMapper.toShoppingCartDto(getUserShoppingCart());

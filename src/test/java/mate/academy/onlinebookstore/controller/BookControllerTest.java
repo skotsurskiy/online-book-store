@@ -14,6 +14,7 @@ import static mate.academy.onlinebookstore.util.TestUtil.URI_BOOKS_ID;
 import static mate.academy.onlinebookstore.util.TestUtil.URI_BOOKS_SEARCH;
 import static mate.academy.onlinebookstore.util.TestUtil.createBookDto;
 import static mate.academy.onlinebookstore.util.TestUtil.createBookRequestDto;
+import static mate.academy.onlinebookstore.util.TestUtil.teardown;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,7 +24,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import javax.sql.DataSource;
-import lombok.SneakyThrows;
 import mate.academy.onlinebookstore.dto.book.BookDto;
 import mate.academy.onlinebookstore.dto.book.CreateBookRequestDto;
 import org.junit.jupiter.api.AfterAll;
@@ -32,9 +32,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.jdbc.Sql;
@@ -68,17 +66,6 @@ class BookControllerTest {
     @AfterAll
     static void afterAll(@Autowired DataSource dataSource) {
         teardown(dataSource);
-    }
-
-    @SneakyThrows
-    static void teardown(DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database/delete-all-from-tables.sql")
-            );
-        }
     }
 
     @Test

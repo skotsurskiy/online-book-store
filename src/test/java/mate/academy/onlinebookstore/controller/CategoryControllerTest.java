@@ -10,6 +10,7 @@ import static mate.academy.onlinebookstore.util.TestUtil.SECOND_VALID_ID;
 import static mate.academy.onlinebookstore.util.TestUtil.URI_CATEGORIES;
 import static mate.academy.onlinebookstore.util.TestUtil.URI_CATEGORIES_ID;
 import static mate.academy.onlinebookstore.util.TestUtil.URI_CATEGORIES_ID_BOOKS;
+import static mate.academy.onlinebookstore.util.TestUtil.teardown;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -20,7 +21,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import javax.sql.DataSource;
-import lombok.SneakyThrows;
 import mate.academy.onlinebookstore.dto.book.BookWithoutCategoryIdDto;
 import mate.academy.onlinebookstore.dto.category.CategoryRequestDto;
 import mate.academy.onlinebookstore.dto.category.CategoryResponseDto;
@@ -30,9 +30,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.jdbc.Sql;
@@ -66,17 +64,6 @@ class CategoryControllerTest {
     @AfterEach
     void tearDown(@Autowired DataSource dataSource) {
         teardown(dataSource);
-    }
-
-    @SneakyThrows
-    static void teardown(DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database/delete-all-from-tables.sql")
-            );
-        }
     }
 
     @Test

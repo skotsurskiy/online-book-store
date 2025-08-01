@@ -8,6 +8,7 @@ import mate.academy.onlinebookstore.dto.cartitem.CartItemRequestDto;
 import mate.academy.onlinebookstore.dto.cartitem.CartItemUpdateQuantityDto;
 import mate.academy.onlinebookstore.dto.shoppingcart.ShoppingCartDto;
 import mate.academy.onlinebookstore.service.shoppingcart.ShoppingCartService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Shopping cart management", description = "Endpoints for managing shopping cart")
@@ -57,6 +59,7 @@ public class ShoppingCartController {
     @Operation(summary = "delete cart item by id", description = "delete cart item by id")
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ShoppingCartDto deleteCartItemById(@PathVariable Long id) {
         return shoppingCartService.deleteCartItemById(id);
     }
