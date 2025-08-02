@@ -16,13 +16,13 @@
 
 <summary>click to expand</summary>
 
-- [📖 Introduction](#-Introduction)
-- [🛠️ Technology Stack](#-Technology-Stack)
-- [💻 API Controllers Overview](#-API-Controllers-Overview)
-- [🗂️ Database Schema Overview](#-Database-Schema-Overview)
-- [🏗️ Project Architecture](#-Project-Architecture)
-- [🚀 Getting Started](#-Getting-Started)
-- [🔧 Manual Setup (Without Docker)](#-manual-setup-without-docker)
+- [📖 Introduction](#Introduction)
+- [🛠️ Technology Stack](#Technology-stack)
+- [💻 API Controllers Overview](#API-Controllers-Overview)
+- [🗂️ Database Schema Overview](#Database-Schema-Overview)
+- [🏗️ Project Architecture](#Project-Architecture)
+- [🚀 Getting Started](#Getting-Started)
+- [🔧 Manual Setup (Without Docker)](#manual-setup-without-docker)
 
 </details>
 
